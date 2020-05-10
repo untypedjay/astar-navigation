@@ -15,6 +15,10 @@ public class Vertex {
     this.bestGuess = Double.POSITIVE_INFINITY;
   }
 
+  public Vertex(Vertex other) {
+    this(other.getX(), other.getY(), other.getId());
+  }
+
   public long getId() {
     return id;
   }
