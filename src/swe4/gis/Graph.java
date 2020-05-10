@@ -4,33 +4,114 @@ import swe4.entities.Edge;
 import swe4.entities.Vertex;
 import swe4.exceptions.InvalidVertexIdException;
 
-import java.util.Collection;
-import java.util.UUID;
+import java.util.*;
 
 public class Graph {
-  public long addVertex(double longitude, double latitude) {
+  private HashMap<Long, Vertex> vertices;
+  private HashMap<String, Edge> edges;
 
-    long id = UUID.randomUUID().toString().hashCode();
-    return id;
+  private class SortByBestGuess implements Comparator<Vertex> {
+    @Override
+    public int compare(Vertex o1, Vertex o2) {
+      if (o1.getBestGuess() <= o2.getBestGuess()) {
+        return -1;
+      } else {
+        return 1;
+      }
+    }
+  }
+
+  public Graph() {
+    this.vertices = new HashMap<>();
+  }
+
+  public long addVertex(double longitude, double latitude) {
+    Vertex vertex = new Vertex(longitude, latitude, UUID.randomUUID().toString().hashCode());
+    vertices.put(vertex.getId(), vertex);
+    return vertex.getId();
   }
 
   public void addEdge(String name, long startVertexId, long endVertexId, double length) throws InvalidVertexIdException {
-
+    if (!vertices.containsKey(startVertexId) || !vertices.containsKey(endVertexId)) {
+      throw new InvalidVertexIdException();
+    } else {
+      edges.put(name, new Edge(name, startVertexId, endVertexId, length));
+    }
   }
 
-//  public Collection<Vertex> getVertices() {
-//    return new Collection<Vertex>();
-//  }
+  public HashMap<Long, Vertex> getVertices() {
+    return vertices;
+  }
 
-//  public Collection<Edge> getEdges() {
-//
-//  }
-//
-//  public Collection<Edge> findShortestPath(long idStartVertex, long idTargetVertex) {
-//    // a star here
-//  }
+  public HashMap<String, Edge> getEdges() {
+    return edges;
+  }
+
+  public Collection<Edge> findShortestPath(long idStartVertex, long idTargetVertex) {
+    PriorityQueue<Vertex> vertexQueue = new PriorityQueue<>(new SortByBestGuess());
+    vertexQueue.add(vertices.get(idStartVertex));
+    vertices.get(idStartVertex).setCost(0);
+    vertices.get(idStartVertex).setBestGuess(heuristicDistanceBetween(idStartVertex, idTargetVertex));
+    HashMap<Long, Long> previousVertex = new HashMap<>();
+
+    while (!vertexQueue.isEmpty()) {
+      Vertex current = new Vertex(vertexQueue.poll());
+      if (current.getId() == idTargetVertex) {
+        resetScores();
+        return reconstructPath(previousVertex, idTargetVertex);
+      }
+
+      for (Vertex neighbor : getNeighborsOf(current)) {
+        double costToNeighbor = current.getCost() + distanceBetween(current.getId(), neighbor.getId());
+        if (costToNeighbor < neighbor.getCost()) {
+          previousVertex.put(neighbor.getId(), current.getId());
+          neighbor.setCost(costToNeighbor);
+          neighbor.setBestGuess(costToNeighbor + heuristicDistanceBetween(neighbor.getId(), idTargetVertex));
+          if (!vertexQueue.contains(neighbor)) {
+            vertexQueue.add(neighbor);
+          }
+        }
+      }
+    }
+    return null;
+  }
 
   public double pathLength(Collection<Edge> path) {
-    return 0;
+    double pathLength = 0;
+    for (Edge edge : path) {
+      pathLength += edge.getLength();
+    }
+    return pathLength;
+  }
+
+  private double heuristicDistanceBetween(long idStartVertex, long idTargetVertex) {
+    double x1 = vertices.get(idStartVertex).getX();
+    double y1 = vertices.get(idStartVertex).getY();
+    double x2 = vertices.get(idTargetVertex).getX();
+    double y2 = vertices.get(idTargetVertex).getY();
+    return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+  }
+
+  private double distanceBetween(long idStartVertex, long idTargetVertex) {
+    double distance;
+    // TODO
+    return distance;
+  }
+
+  private void resetScores() {
+    for (Vertex vertex : vertices.values()) {
+      vertex.setCost(Double.POSITIVE_INFINITY);
+      vertex.setBestGuess(Double.POSITIVE_INFINITY);
+    }
+  }
+
+  private Collection<Edge> reconstructPath(HashMap<Long, Long> previousVertex, long vertexId) {
+    // TODO
+  }
+
+  private HashSet<Vertex> getNeighborsOf(Vertex vertex) {
+    HashSet<Vertex> neighbors = new HashSet<>();
+    // TODO
+    return neighbors;
   }
 }
