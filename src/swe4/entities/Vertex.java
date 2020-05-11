@@ -14,7 +14,7 @@ public class Vertex {
   }
 
   public Vertex(Vertex other) {
-    this(other.getX(), other.getY(), other.getId());
+    this(other.getId(), other.getCoordinates());
   }
 
   public long getId() {
