@@ -2,7 +2,7 @@ package swe4.tests;
 
 
 import org.junit.jupiter.api.Test;
-import swe4.entities.Edge;
+import swe4.Edge;
 import swe4.exceptions.InvalidVertexIdException;
 import swe4.gis.Graph;
 

@@ -1,4 +1,4 @@
-package swe4.entities;
+package swe4;
 
 public class SphericMath {
   public static double earthMeanRadius = 6371.0*1000.0;

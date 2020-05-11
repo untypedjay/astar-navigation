@@ -1,10 +1,9 @@
 package swe4.gis;
 
-import swe4.entities.Edge;
-import swe4.entities.Vertex;
+import swe4.Edge;
+import swe4.SphericPoint;
+import swe4.Vertex;
 import swe4.exceptions.InvalidVertexIdException;
-
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class Graph {
@@ -28,7 +27,7 @@ public class Graph {
   }
 
   public long addVertex(double longitude, double latitude) {
-    Vertex vertex = new Vertex(longitude, latitude, UUID.randomUUID().toString().hashCode());
+    Vertex vertex = new Vertex(UUID.randomUUID().toString().hashCode(), new SphericPoint(longitude, latitude));
     vertices.put(vertex.getId(), vertex);
     return vertex.getId();
   }

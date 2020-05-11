@@ -1,4 +1,4 @@
-package swe4.entities;
+package swe4;
 
 public class Vertex {
   private long id;
