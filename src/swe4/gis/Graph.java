@@ -24,6 +24,7 @@ public class Graph {
 
   public Graph() {
     this.vertices = new HashMap<>();
+    this.edges = new HashMap<>();
   }
 
   public long addVertex(double longitude, double latitude) {
@@ -48,7 +49,7 @@ public class Graph {
     return edges;
   }
 
-  public Collection<Edge> findShortestPath(long idStartVertex, long idTargetVertex) {
+  public LinkedList<Edge> findShortestPath(long idStartVertex, long idTargetVertex) {
     PriorityQueue<Vertex> vertexQueue = new PriorityQueue<>(new SortByBestGuess());
     vertexQueue.add(vertices.get(idStartVertex));
     vertices.get(idStartVertex).setCost(0);
@@ -109,7 +110,7 @@ public class Graph {
     }
   }
 
-  private Collection<Edge> reconstructPath(HashMap<Long, Long> previousVertex, long vertexId) {
+  private LinkedList<Edge> reconstructPath(HashMap<Long, Long> previousVertex, long vertexId) {
     LinkedList<Edge> path = new LinkedList<>();
     try {
       long previousVertexId = previousVertex.get(vertexId);
