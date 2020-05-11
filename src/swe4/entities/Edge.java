@@ -7,10 +7,10 @@ public class Edge {
   private double length;
   private short category;
 
-  public Edge(String name, long startVertexId, long endVertexId, double length) {
+  public Edge(Vertex start, Vertex end, String name, double length) {
+    this.start = start;
+    this.end = end;
     this.name = name;
-    this.startVertexId = startVertexId;
-    this.endVertexId = endVertexId;
     this.length = length;
   }
 
