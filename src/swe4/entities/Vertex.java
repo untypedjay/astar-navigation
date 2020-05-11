@@ -1,16 +1,14 @@
 package swe4.entities;
 
 public class Vertex {
-  private final long id;
-  private double x;
-  private double y;
+  private long id;
+  private SphericPoint coordinates;
   private double cost;
   private double bestGuess;
 
-  public Vertex(double x, double y, long id) {
+  public Vertex(long id, SphericPoint coordinates) {
     this.id = id;
-    this.x = x;
-    this.y = y;
+    this.coordinates = coordinates;
     this.cost = Double.POSITIVE_INFINITY;
     this.bestGuess = Double.POSITIVE_INFINITY;
   }
@@ -23,20 +21,12 @@ public class Vertex {
     return id;
   }
 
-  public double getX() {
-    return x;
+  public SphericPoint getCoordinates() {
+    return coordinates;
   }
 
-  public void setX(double x) {
-    this.x = x;
-  }
-
-  public double getY() {
-    return y;
-  }
-
-  public void setY(double y) {
-    this.y = y;
+  public void setCoordinates(SphericPoint coordinates) {
+    this.coordinates = coordinates;
   }
 
   public double getCost() {
