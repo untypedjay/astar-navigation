@@ -4,9 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Scanner;
+
+import swe4.SphericPoint;
 import swe4.gis.GraphReader;
 import swe4.gis.EdgeData;
-import swe4.gis.SphericPoint;
 
 public class OsmReader implements GraphReader, AutoCloseable {
 

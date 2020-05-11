@@ -1,7 +1,8 @@
 package swe4.gis;
 
+import swe4.SphericPoint;
+
 public class EdgeData {
-	
   private long         id;
   private long         startId;
   private long         endId;

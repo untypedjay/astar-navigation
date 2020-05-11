@@ -10,7 +10,7 @@ import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TestGraph {
+public class GraphTest {
   @Test
   public void testAddVertex() {
     Graph g = new Graph();

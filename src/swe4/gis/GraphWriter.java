@@ -1,5 +1,7 @@
 package swe4.gis;
 
+import swe4.Edge;
+
 import java.io.IOException;
 import java.util.Collection;
 

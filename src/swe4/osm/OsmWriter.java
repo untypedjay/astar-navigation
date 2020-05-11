@@ -1,9 +1,8 @@
-package swe4.gis.osm;
-
-import swe4.gis.Edge;
+package swe4.osm;
+import swe4.Edge;
+import swe4.Vertex;
 import swe4.gis.Graph;
 import swe4.gis.GraphWriter;
-import swe4.gis.Vertex;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
