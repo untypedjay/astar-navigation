@@ -7,7 +7,6 @@ import swe4.exceptions.InvalidVertexIdException;
 import java.util.*;
 
 public class Graph {
-  private enum CostType {DISTANCE, TIME};
 
   private HashMap<Long, Vertex> vertices;
   private HashMap<String, Edge> edges;
@@ -51,13 +50,37 @@ public class Graph {
   }
 
   public Collection<Edge> findShortestPath(long idStartVertex, long idTargetVertex) {
-    return findBestPath(idStartVertex, idTargetVertex, CostType.DISTANCE);
+    return findBestPath(idStartVertex, idTargetVertex, null);
   }
 
-  private Collection<Edge> findBestPath(long idStartVertex, long idTargetVertex, CostType type) {
+  public Collection<Edge> findMinimalPath(long idStartVertex, long idTargetVertex, CostCalculator calc) {
+    return findBestPath(idStartVertex, idTargetVertex, calc);
+  }
+
+  public double pathLength(Collection<Edge> path) {
+    double pathLength = 0;
+    for (Edge edge : path) {
+      pathLength += edge.getLength();
+    }
+    return pathLength;
+  }
+
+  public double pathCosts(Collection<Edge> path, CostCalculator calc) {
+    double pathCosts = 0;
+    for (Edge edge : path) {
+      pathCosts += calc.costs(edge);
+    }
+    return pathCosts;
+  }
+
+  private Collection<Edge> findBestPath(long idStartVertex, long idTargetVertex, CostCalculator calc) {
     PriorityQueue<Vertex> vertexQueue = new PriorityQueue<>(new SortByBestGuess());
     vertices.get(idStartVertex).setCost(0);
-    vertices.get(idStartVertex).setBestGuess(heuristicDistanceBetween(idStartVertex, idTargetVertex)); // hier
+    if (calc != null) {
+      vertices.get(idStartVertex).setBestGuess(calc.estimatedCosts(vertices.get(idStartVertex), vertices.get(idTargetVertex)));
+    } else {
+      vertices.get(idStartVertex).setBestGuess(heuristicDistanceBetween(idStartVertex, idTargetVertex));
+    }
     vertexQueue.add(vertices.get(idStartVertex));
     HashMap<Long, Vertex> previousVertexOf = new HashMap<>();
 
@@ -70,11 +93,19 @@ public class Graph {
 
       for (Vertex neighbor : getNeighborsOf(current)) {
         double costToNeighbor = 0;
-        costToNeighbor = current.getCost() + distanceBetween(current, neighbor); // hier
+        if (calc != null) {
+          costToNeighbor = current.getCost() + calc.costs(edges.get(getEdgeName(current, neighbor)));
+        } else {
+          costToNeighbor = current.getCost() + distanceBetween(current, neighbor);
+        }
         if (costToNeighbor < neighbor.getCost()) {
           previousVertexOf.put(neighbor.getId(), current);
           neighbor.setCost(costToNeighbor);
-          neighbor.setBestGuess(costToNeighbor + heuristicDistanceBetween(neighbor.getId(), idTargetVertex)); // hier
+          if (calc != null) {
+            neighbor.setBestGuess(costToNeighbor + calc.estimatedCosts(neighbor, vertices.get(idTargetVertex)));
+          } else {
+            neighbor.setBestGuess(costToNeighbor + heuristicDistanceBetween(neighbor.getId(), idTargetVertex));
+          }
           if (!vertexQueue.contains(neighbor)) {
             vertexQueue.add(neighbor);
           }
@@ -82,24 +113,6 @@ public class Graph {
       }
     }
     return new ArrayList<>();
-  }
-
-  public Collection<Edge> findMinimalPath(long idStartVertex, long idTargetVertex, CostCalculator calc) {
-    // TODO
-    return null;
-  }
-
-  public double pathLength(Collection<Edge> path) {
-    double pathLength = 0;
-    for (Edge edge : path) {
-      pathLength += edge.getLength();
-    }
-    return pathLength;
-  }
-
-  public double pathCosts(Collection<Edge> path, CostCalculator calc) {
-    // TODO
-    return 0;
   }
 
   private double heuristicDistanceBetween(long idStartVertex, long idTargetVertex) {

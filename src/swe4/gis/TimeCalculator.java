@@ -31,7 +31,6 @@ public class TimeCalculator implements CostCalculator {
   @Override
   public double estimatedCosts(Vertex v1, Vertex v2) {
     double linearDistance = SphericMath.earthDistance(v1.getCoordinates(), v2.getCoordinates()) * 0.001;
-    System.out.println(linearDistance);
     return calculateTimeInHours(linearDistance, 130);
   }
 
