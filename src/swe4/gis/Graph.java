@@ -32,11 +32,11 @@ public class Graph {
     return vertex.getId();
   }
 
-  public void addEdge(String name, long startVertexId, long endVertexId, double length) throws InvalidVertexIdException {
+  public void addEdge(String name, long startVertexId, long endVertexId, double length, short category) throws InvalidVertexIdException {
     if (!vertices.containsKey(startVertexId) || !vertices.containsKey(endVertexId)) {
       throw new InvalidVertexIdException();
     } else {
-      edges.put(name, new Edge(vertices.get(startVertexId), vertices.get(endVertexId), name, length));
+      edges.put(name, new Edge(vertices.get(startVertexId), vertices.get(endVertexId), name, length, category));
     }
   }
 
@@ -80,8 +80,12 @@ public class Graph {
         }
       }
     }
-    System.out.println("this shit should not execute");
     return new ArrayList<>();
+  }
+
+  public Collection<Edge> findMinimalPath(long idStartVertex, long idTargetVertex, CostCalculator calc) {
+    // TODO
+    return null;
   }
 
   public double pathLength(Collection<Edge> path) {
@@ -90,6 +94,11 @@ public class Graph {
       pathLength += edge.getLength();
     }
     return pathLength;
+  }
+
+  public double pathCosts(Collection<Edge> path, CostCalculator calc) {
+    // TODO
+    return 0;
   }
 
   private double heuristicDistanceBetween(long idStartVertex, long idTargetVertex) {
@@ -120,7 +129,7 @@ public class Graph {
       path.add(edges.get(getEdgeName(previous, current)));
       current = previous;
     }
-    Collections.reverse(path);""
+    Collections.reverse(path);
     return path;
   }
 

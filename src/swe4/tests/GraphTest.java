@@ -112,5 +112,7 @@ public class GraphTest {
 
     assertEquals(5, austria.findShortestPath(innsbruck, eisenstadt).size());
     assertEquals(530, austria.pathLength(austria.findShortestPath(innsbruck, eisenstadt)));
+
+    assertEquals(0, austria.findShortestPath(linz, linz).size());
   }
 }
