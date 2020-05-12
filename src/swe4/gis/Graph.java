@@ -120,7 +120,7 @@ public class Graph {
       path.add(edges.get(getEdgeName(previous, current)));
       current = previous;
     }
-    Collections.reverse(path);
+    Collections.reverse(path);""
     return path;
   }
 
