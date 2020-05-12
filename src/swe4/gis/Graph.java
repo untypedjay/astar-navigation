@@ -7,6 +7,8 @@ import swe4.exceptions.InvalidVertexIdException;
 import java.util.*;
 
 public class Graph {
+  private enum CostType {DISTANCE, TIME};
+
   private HashMap<Long, Vertex> vertices;
   private HashMap<String, Edge> edges;
 
@@ -49,9 +51,13 @@ public class Graph {
   }
 
   public Collection<Edge> findShortestPath(long idStartVertex, long idTargetVertex) {
+    return findBestPath(idStartVertex, idTargetVertex, CostType.DISTANCE);
+  }
+
+  private Collection<Edge> findBestPath(long idStartVertex, long idTargetVertex, CostType type) {
     PriorityQueue<Vertex> vertexQueue = new PriorityQueue<>(new SortByBestGuess());
     vertices.get(idStartVertex).setCost(0);
-    vertices.get(idStartVertex).setBestGuess(heuristicDistanceBetween(idStartVertex, idTargetVertex));
+    vertices.get(idStartVertex).setBestGuess(heuristicDistanceBetween(idStartVertex, idTargetVertex)); // hier
     vertexQueue.add(vertices.get(idStartVertex));
     HashMap<Long, Vertex> previousVertexOf = new HashMap<>();
 
@@ -64,16 +70,11 @@ public class Graph {
 
       for (Vertex neighbor : getNeighborsOf(current)) {
         double costToNeighbor = 0;
-        try {
-          costToNeighbor = current.getCost() + distanceBetween(current, neighbor);
-
-        } catch (InvalidVertexIdException e) {
-          e.printStackTrace();
-        }
+        costToNeighbor = current.getCost() + distanceBetween(current, neighbor); // hier
         if (costToNeighbor < neighbor.getCost()) {
           previousVertexOf.put(neighbor.getId(), current);
           neighbor.setCost(costToNeighbor);
-          neighbor.setBestGuess(costToNeighbor + heuristicDistanceBetween(neighbor.getId(), idTargetVertex));
+          neighbor.setBestGuess(costToNeighbor + heuristicDistanceBetween(neighbor.getId(), idTargetVertex)); // hier
           if (!vertexQueue.contains(neighbor)) {
             vertexQueue.add(neighbor);
           }
@@ -109,7 +110,7 @@ public class Graph {
     return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
   }
 
-  private double distanceBetween(Vertex start, Vertex end) throws InvalidVertexIdException {
+  private double distanceBetween(Vertex start, Vertex end) {
     return edges.get(getEdgeName(start, end)).getLength();
   }
 
