@@ -34,7 +34,7 @@ public class Vertex {
   }
 
   public void setCost(double cost) {
-    if (cost > 0) {
+    if (cost >= 0) {
       this.cost = cost;
     }
   }

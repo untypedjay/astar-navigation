@@ -48,29 +48,30 @@ public class Graph {
     return edges.values();
   }
 
-  public LinkedList<Edge> findShortestPath(long idStartVertex, long idTargetVertex) {
+  public Collection<Edge> findShortestPath(long idStartVertex, long idTargetVertex) {
     PriorityQueue<Vertex> vertexQueue = new PriorityQueue<>(new SortByBestGuess());
-    vertexQueue.add(vertices.get(idStartVertex));
     vertices.get(idStartVertex).setCost(0);
     vertices.get(idStartVertex).setBestGuess(heuristicDistanceBetween(idStartVertex, idTargetVertex));
-    HashMap<Long, Vertex> previousVertex = new HashMap<>();
+    vertexQueue.add(vertices.get(idStartVertex));
+    HashMap<Long, Vertex> previousVertexOf = new HashMap<>();
 
     while (!vertexQueue.isEmpty()) {
-      Vertex current = new Vertex(vertexQueue.poll());
-      if (current.getId() == idTargetVertex) {
+      Vertex current = vertexQueue.poll();
+      if (current == vertices.get(idTargetVertex)) {
         resetScores();
-        return reconstructPath(previousVertex, vertices.get(idTargetVertex));
+        return reconstructPath(previousVertexOf, vertices.get(idTargetVertex));
       }
 
       for (Vertex neighbor : getNeighborsOf(current)) {
         double costToNeighbor = 0;
         try {
           costToNeighbor = current.getCost() + distanceBetween(current, neighbor);
+
         } catch (InvalidVertexIdException e) {
           e.printStackTrace();
         }
         if (costToNeighbor < neighbor.getCost()) {
-          previousVertex.put(neighbor.getId(), current);
+          previousVertexOf.put(neighbor.getId(), current);
           neighbor.setCost(costToNeighbor);
           neighbor.setBestGuess(costToNeighbor + heuristicDistanceBetween(neighbor.getId(), idTargetVertex));
           if (!vertexQueue.contains(neighbor)) {
@@ -79,7 +80,8 @@ public class Graph {
         }
       }
     }
-    return null;
+    System.out.println("this shit should not execute");
+    return new ArrayList<>();
   }
 
   public double pathLength(Collection<Edge> path) {
@@ -109,39 +111,44 @@ public class Graph {
     }
   }
 
-  private LinkedList<Edge> reconstructPath(HashMap<Long, Vertex> previousVertexMap, Vertex vertex) {
-    LinkedList<Edge> path = new LinkedList<>();
-    try {
-      Vertex previousVertex;
-      while (previousVertexMap.get(vertex.getId()) != null) {
-        previousVertex = previousVertexMap.get(vertex.getId());
-        path.addFirst(edges.get(getEdgeName(previousVertex, vertex)));
-        vertex = previousVertex;
-      }
-    } catch (InvalidVertexIdException e) {
-      e.printStackTrace();
+  private Collection<Edge> reconstructPath(HashMap<Long, Vertex> previousVertexMap, Vertex vertex) {
+    List<Edge> path = new LinkedList<>();
+    Vertex current = vertex;
+    Vertex previous = vertex;
+    while (previousVertexMap.get(current.getId()) != null) {
+      previous = previousVertexMap.get(current.getId());
+      path.add(edges.get(getEdgeName(previous, current)));
+      current = previous;
     }
+    Collections.reverse(path);
     return path;
   }
 
   private HashSet<Vertex> getNeighborsOf(Vertex vertex) {
     HashSet<Vertex> neighbors = new HashSet<>();
     for (Vertex potentialNeighbor : vertices.values()) {
-      try {
-        if (getEdgeName(vertex, potentialNeighbor) != null || getEdgeName(potentialNeighbor, vertex) != null) {
-          neighbors.add(potentialNeighbor);
-        }
-      } catch (InvalidVertexIdException ignore) {}
+      if (edgeExists(vertex, potentialNeighbor)) {
+        neighbors.add(potentialNeighbor);
+      }
     }
     return neighbors;
   }
 
-  private String getEdgeName(Vertex start, Vertex end) throws InvalidVertexIdException {
+  private boolean edgeExists(Vertex start, Vertex end) {
     for (Edge edge : edges.values()) {
-      if (edge.getStart() == start && edge.getEnd() == end) {
+      if ((edge.getStart() == start && edge.getEnd() == end) || (edge.getStart() == end && edge.getEnd() == start)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private String getEdgeName(Vertex start, Vertex end) {
+    for (Edge edge : edges.values()) {
+      if ((edge.getStart() == start && edge.getEnd() == end) || (edge.getStart() == end && edge.getEnd() == start)) {
         return edge.getName();
       }
     }
-    throw new InvalidVertexIdException();
+    return "";
   }
 }

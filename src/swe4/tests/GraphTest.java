@@ -3,40 +3,66 @@ package swe4.tests;
 
 import org.junit.jupiter.api.Test;
 import swe4.Edge;
+import swe4.Vertex;
 import swe4.exceptions.InvalidVertexIdException;
 import swe4.gis.Graph;
 
-import java.util.LinkedList;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GraphTest {
   @Test
   public void testAddVertex() {
     Graph g = new Graph();
-    g.addVertex(3.4, 3.5);
+    assertTrue(g.getVertices().isEmpty());
+    g.addVertex(34, 35);
+    assertFalse(g.getVertices().isEmpty());
+    g.addVertex(52.349393, 68.487654);
+    g.addVertex(-2, -5);
+    assertEquals(3, g.getVertices().size());
   }
 
   @Test
-  public void testFindShortestPathFromDornbirnToVienna() {
+  public void testAddEdge() {
+    Graph g = new Graph();
+    long v1 = g.addVertex(345.346, 234.245);
+    long v2 = g.addVertex(2456.2456, 2456.246);
+    long v3 = g.addVertex(247.245, 2456.4);
+    try {
+      g.addEdge("v1v2", v1, v2, 34);
+      g.addEdge("v2v3", v2, v3, 4);
+      assertEquals(2, g.getEdges().size());
+      g.addEdge("v2v3", v2, v3, 45);
+      assertFalse(g.getEdges().size() == 3);
+    } catch (InvalidVertexIdException e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Test
+  public void testPathLength() {
+
+  }
+
+  @Test
+  public void testFindShortestPath() {
     Graph austria = new Graph();
-    long bregenz = austria.addVertex(47500000, 9760000);
-    long dornbirn = austria.addVertex(47410000, 9740000);
-    long feldkirch = austria.addVertex(47250000, 9590000);
-    long salzburg = austria.addVertex(47810000, 13050000);
-    long innsbruck = austria.addVertex(47270000, 11400000);
-    long villach = austria.addVertex(46620000, 13880000);
-    long wels = austria.addVertex(48160000, 14020000);
-    long linz = austria.addVertex(48320000, 14300000);
-    long steyr = austria.addVertex(48050000, 14420000);
-    long klagenfurt = austria.addVertex(46620000, 14300000);
-    long leoben = austria.addVertex(47380000, 15010000);
-    long graz = austria.addVertex(47070000, 15440000);
-    long krems = austria.addVertex(48410000, 15610000);
-    long stPoelten = austria.addVertex(48210000, 15630000);
-    long wien = austria.addVertex(48210000, 16400000);
-    long wienerNeustadt = austria.addVertex(47810000, 16230000);
-    long eisenstadt = austria.addVertex(47840000, 16530000);
+    long bregenz = austria.addVertex(47.500000, 9.760000);
+    long dornbirn = austria.addVertex(47.410000, 9.740000);
+    long feldkirch = austria.addVertex(47.250000, 9.590000);
+    long salzburg = austria.addVertex(47.810000, 13.050000);
+    long innsbruck = austria.addVertex(47.270000, 11.400000);
+    long villach = austria.addVertex(46.620000, 13.880000);
+    long wels = austria.addVertex(48.160000, 14.020000);
+    long linz = austria.addVertex(48.320000, 14.300000);
+    long steyr = austria.addVertex(48.050000, 14.420000);
+    long klagenfurt = austria.addVertex(46.620000, 14.300000);
+    long leoben = austria.addVertex(47.380000, 15.010000);
+    long graz = austria.addVertex(47.070000, 15.440000);
+    long krems = austria.addVertex(48.410000, 15.610000);
+    long stPoelten = austria.addVertex(48.210000, 15.630000);
+    long wien = austria.addVertex(48.210000, 16.400000);
+    long wienerNeustadt = austria.addVertex(47.810000, 16.230000);
+    long eisenstadt = austria.addVertex(47.840000, 16.530000);
 
     try {
       austria.addEdge("bgzdbn", bregenz, dornbirn, 10);
@@ -76,16 +102,15 @@ public class GraphTest {
       e.printStackTrace();
     }
 
-    LinkedList<Edge> dornbirnWien = new LinkedList<>();
-    for (Edge edge : austria.findShortestPath(dornbirn, wien)) {
-      dornbirnWien.add(edge);
-    }
-    assertEquals("bgzdbn", dornbirnWien.getFirst().getName());
-    assertEquals("bgzszg", dornbirnWien.get(1).getName());
-    assertEquals("szgsty", dornbirnWien.get(2).getName());
-    assertEquals("styspn", dornbirnWien.get(3).getName());
-    assertEquals("spnwie", dornbirnWien.getLast().getName());
-    assertEquals(643, austria.pathLength(dornbirnWien));
-    assertEquals(5, dornbirnWien.size());
+    assertEquals(4017, austria.pathLength(austria.getEdges()));
+
+    assertEquals(5, austria.findShortestPath(dornbirn, wien).size());
+    assertEquals(643, austria.pathLength(austria.findShortestPath(dornbirn, wien)));
+
+    assertEquals(3, austria.findShortestPath(krems, graz).size());
+    assertEquals(265, austria.pathLength(austria.findShortestPath(krems, graz)));
+
+    assertEquals(5, austria.findShortestPath(innsbruck, eisenstadt).size());
+    assertEquals(530, austria.pathLength(austria.findShortestPath(innsbruck, eisenstadt)));
   }
 }
