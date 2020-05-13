@@ -112,7 +112,7 @@ public class OsmWriter implements GraphWriter {
   public void writePath(Collection<Edge> edges, String fileName) throws IOException {
     if (edges.size() < 1) throw new IllegalArgumentException("Empty path!");
 
-    Path htmlFile = Paths.get(String.format("bin/%s.html", fileName));
+    Path htmlFile = Paths.get(String.format("%s.html", fileName));
     Files.deleteIfExists(htmlFile);
 
     Locale defaultLocale = Locale.getDefault();
@@ -178,7 +178,7 @@ public class OsmWriter implements GraphWriter {
     if (graph.getVertices().size() < 1)
       throw new IllegalArgumentException("Empty path!");
 
-    Path htmlFile = Paths.get(String.format("bin/%s.html", fileName));
+    Path htmlFile = Paths.get(String.format("%s.html", fileName));
     Files.deleteIfExists(htmlFile);
 
     Locale defaultLocale = Locale.getDefault();

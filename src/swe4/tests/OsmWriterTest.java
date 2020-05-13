@@ -1,44 +1,16 @@
 package swe4.tests;
 
-
 import org.junit.jupiter.api.Test;
 import swe4.exceptions.InvalidVertexIdException;
 import swe4.gis.Graph;
-import swe4.gis.TimeCalculator;
+import swe4.gis.GraphWriter;
+import swe4.osm.OsmWriter;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.io.IOException;
 
-public class GraphTest {
+public class OsmWriterTest {
   @Test
-  public void testAddVertex() {
-    Graph g = new Graph();
-    assertTrue(g.getVertices().isEmpty());
-    g.addVertex(34, 35);
-    assertFalse(g.getVertices().isEmpty());
-    g.addVertex(52.349393, 68.487654);
-    g.addVertex(-2, -5);
-    assertEquals(3, g.getVertices().size());
-  }
-
-  @Test
-  public void testAddEdge() {
-    Graph g = new Graph();
-    long v1 = g.addVertex(345.346, 234.245);
-    long v2 = g.addVertex(2456.2456, 2456.246);
-    long v3 = g.addVertex(247.245, 2456.4);
-    try {
-      g.addEdge("v1v2", v1, v2, 34, (short) 1);
-      g.addEdge("v2v3", v2, v3, 4, (short) 1);
-      assertEquals(2, g.getEdges().size());
-      g.addEdge("v2v3", v2, v3, 45, (short) 1);
-      assertFalse(g.getEdges().size() == 3);
-    } catch (InvalidVertexIdException e) {
-      e.printStackTrace();
-    }
-  }
-
-  @Test
-  public void testFindShortestPath() {
+  public void testWriterAustria() {
     Graph austria = new Graph();
     long bregenz = austria.addVertex(47.500000, 9.760000);
     long dornbirn = austria.addVertex(47.410000, 9.740000);
@@ -96,22 +68,16 @@ public class GraphTest {
       e.printStackTrace();
     }
 
-    assertEquals(4017, austria.pathLength(austria.getEdges()));
-
-    assertEquals(5, austria.findShortestPath(dornbirn, wien).size());
-    assertEquals(643, austria.pathLength(austria.findShortestPath(dornbirn, wien)));
-
-    assertEquals(3, austria.findShortestPath(krems, graz).size());
-    assertEquals(265, austria.pathLength(austria.findShortestPath(krems, graz)));
-
-    assertEquals(5, austria.findShortestPath(innsbruck, eisenstadt).size());
-    assertEquals(530, austria.pathLength(austria.findShortestPath(innsbruck, eisenstadt)));
-
-    assertEquals(0, austria.findShortestPath(linz, linz).size());
+    GraphWriter austriaWriter = new OsmWriter();
+    try {
+      austriaWriter.writeGraph(austria, "resources/austria");
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   @Test
-  public void testFindMinimalPath() {
+  public void testWriterUpperAustria() {
     Graph upperAustria = new Graph();
     long braunau = upperAustria.addVertex(48.250000, 13.040000);
     long ried = upperAustria.addVertex(48.210000, 13.490000);
@@ -147,16 +113,12 @@ public class GraphTest {
       e.printStackTrace();
     }
 
-    TimeCalculator tc = new TimeCalculator();
-
-    assertEquals(634, upperAustria.pathLength(upperAustria.getEdges()));
-
-    assertEquals(3, upperAustria.findMinimalPath(ansfelden, voecklabruck, tc).size());
-    assertEquals(0.54, upperAustria.pathCosts(upperAustria.findMinimalPath(ansfelden, voecklabruck, tc), tc), 0.01);
-
-    assertEquals(2, upperAustria.findMinimalPath(steyr, voecklabruck, tc).size());
-    assertEquals(0.79, upperAustria.pathCosts(upperAustria.findMinimalPath(steyr, voecklabruck, tc), tc), 0.01);
-
-    assertEquals(0, upperAustria.findShortestPath(braunau, braunau).size());
+    GraphWriter upperAustriaWriter = new OsmWriter();
+    try {
+      upperAustriaWriter.writeGraph(upperAustria, "resources/upperaustria");
+      upperAustriaWriter.writePath(upperAustria.findShortestPath(braunau, linz), "resources/braunaulinz");
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 }

@@ -33,12 +33,26 @@ public class Graph {
     return vertex.getId();
   }
 
+  public long addVertex(long id, SphericPoint point) {
+    Vertex vertex = new Vertex(id, point);
+    vertices.put(vertex.getId(), vertex);
+    return vertex.getId();
+  }
+
+  public long getVertexId(String name) {
+    return edges.get(name).getStart().getId();
+  }
+
   public void addEdge(String name, long startVertexId, long endVertexId, double length, short category) throws InvalidVertexIdException {
     if (!vertices.containsKey(startVertexId) || !vertices.containsKey(endVertexId)) {
       throw new InvalidVertexIdException();
     } else {
       edges.put(name, new Edge(vertices.get(startVertexId), vertices.get(endVertexId), name, length, category));
     }
+  }
+
+  public void addEdge(EdgeData edge) throws InvalidVertexIdException {
+    addEdge(edge.getName(), edge.getStartId(), edge.getEndId(), edge.getLength(), edge.getCategory());
   }
 
   public Collection<Vertex> getVertices() {
@@ -98,7 +112,7 @@ public class Graph {
         } else {
           costToNeighbor = current.getCost() + distanceBetween(current, neighbor);
         }
-        if (costToNeighbor < neighbor.getCost()) {
+        if (costToNeighbor <= neighbor.getCost()) {
           previousVertexOf.put(neighbor.getId(), current);
           neighbor.setCost(costToNeighbor);
           if (calc != null) {
@@ -112,6 +126,7 @@ public class Graph {
         }
       }
     }
+    System.out.println("No route found!");
     return new ArrayList<>();
   }
 
